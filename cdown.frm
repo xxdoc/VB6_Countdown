@@ -70,7 +70,7 @@ Begin VB.Form Countdown
       _ExtentX        =   3413
       _ExtentY        =   661
       _Version        =   393216
-      Format          =   75104257
+      Format          =   75694081
       CurrentDate     =   43622
    End
    Begin VB.Timer Timer1 
@@ -380,7 +380,7 @@ Private Sub Form_Load()
 Dim col As Color
 Set col = New Color
 col.set_r col.GetRGB(Label1.BackColor, 1)
-MsgBox col.get_r
+
 
 
 
