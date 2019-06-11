@@ -57,6 +57,7 @@ ServerSupportFiles=0
 VersionCompanyName="Company"
 VersionFileDescription="Ein einfaches Countdown Programm "
 VersionLegalCopyright="Dies ist ein kostenloses Produkt und darf überall genommen werden"
+VersionProductName="CountdownVB6"
 CompilationType=0
 OptimizationType=0
 FavorPentiumPro(tm)=0

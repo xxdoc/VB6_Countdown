@@ -115,9 +115,9 @@ Const KEY_ENUMERATE_SUB_KEYS = &H8
 Const KEY_NOTIFY = &H10
 Const KEY_CREATE_LINK = &H20
 Const KEY_ALL_ACCESS = KEY_QUERY_VALUE + KEY_SET_VALUE + _
-                       KEY_CREATE_SUB_KEY + KEY_ENUMERATE_SUB_KEYS + _
-                       KEY_NOTIFY + KEY_CREATE_LINK + READ_CONTROL
-                     
+      KEY_CREATE_SUB_KEY + KEY_ENUMERATE_SUB_KEYS + _
+      KEY_NOTIFY + KEY_CREATE_LINK + READ_CONTROL
+
 ' Registrierungsschlüssel-Stammtypen...
 Const HKEY_LOCAL_MACHINE = &H80000002
 Const ERROR_SUCCESS = 0
@@ -135,15 +135,15 @@ Private Declare Function RegCloseKey Lib "advapi32" (ByVal hKey As Long) As Long
 
 
 Private Sub cmdSysInfo_Click()
-  Call StartSysInfo
+    Call StartSysInfo
 End Sub
 
 Private Sub cmdOK_Click()
-  Unload Me
+    Unload Me
 End Sub
 
 Private Sub Form_Load()
-    
+
     Me.Caption = "Info zu " & App.Title
     lblVersion.Caption = "Version " & App.Major & "." & App.Minor & "." & App.Revision
     lblTitle.Caption = App.Title
@@ -153,29 +153,29 @@ End Sub
 
 Public Sub StartSysInfo()
     On Error GoTo SysInfoErr
-  
+
     Dim rc As Long
     Dim SysInfoPath As String
-    
+
     ' Versuchen, den Systeminfo-Programmpfad/-namen aus der Registrierung abzurufen...
     If GetKeyValue(HKEY_LOCAL_MACHINE, gREGKEYSYSINFO, gREGVALSYSINFO, SysInfoPath) Then
-    ' Versuchen, nur den Systeminfo-Programmpfad aus der Registrierung abzurufen...
+        ' Versuchen, nur den Systeminfo-Programmpfad aus der Registrierung abzurufen...
     ElseIf GetKeyValue(HKEY_LOCAL_MACHINE, gREGKEYSYSINFOLOC, gREGVALSYSINFOLOC, SysInfoPath) Then
         ' Überprüfen, ob bekannte 32-Dateiversion vorhanden ist
         If (Dir(SysInfoPath & "\MSINFO32.EXE") <> "") Then
             SysInfoPath = SysInfoPath & "\MSINFO32.EXE"
-            
-        ' Fehler - Datei wurde nicht gefunden...
+
+            ' Fehler - Datei wurde nicht gefunden...
         Else
             GoTo SysInfoErr
         End If
-    ' Fehler - Registrierungseintrag wurde nicht gefunden...
+        ' Fehler - Registrierungseintrag wurde nicht gefunden...
     Else
         GoTo SysInfoErr
     End If
-    
+
     Call Shell(SysInfoPath, vbNormalFocus)
-    
+
     Exit Sub
 SysInfoErr:
     MsgBox "Systeminformationen sind momentan nicht verfügbar", vbOKOnly
@@ -192,21 +192,21 @@ Public Function GetKeyValue(KeyRoot As Long, KeyName As String, SubKeyRef As Str
     '------------------------------------------------------------
     ' Registrierungsschlüssel unter KeyRoot {HKEY_LOCAL_MACHINE...} öffnen
     '------------------------------------------------------------
-    rc = RegOpenKeyEx(KeyRoot, KeyName, 0, KEY_ALL_ACCESS, hKey) ' Registrierungsschlüssel öffnen
-    
+    rc = RegOpenKeyEx(KeyRoot, KeyName, 0, KEY_ALL_ACCESS, hKey)    ' Registrierungsschlüssel öffnen
+
     If (rc <> ERROR_SUCCESS) Then GoTo GetKeyError          ' Fehler behandeln...
-    
+
     tmpVal = String$(1024, 0)                             ' Platz für Variable reservieren
     KeyValSize = 1024                                       ' Größe der Variable markieren
-    
+
     '------------------------------------------------------------
     ' Registrierungsschlüsselwert abrufen...
     '------------------------------------------------------------
     rc = RegQueryValueEx(hKey, SubKeyRef, 0, _
                          KeyValType, tmpVal, KeyValSize)    ' Schlüsselwert abrufen/erstellen
-                        
+
     If (rc <> ERROR_SUCCESS) Then GoTo GetKeyError          ' Fehler behandeln
-    
+
     If (Asc(Mid(tmpVal, KeyValSize, 1)) = 0) Then           ' Win95 fügt null-terminierte Zeichenfolge hinzu...
         tmpVal = Left(tmpVal, KeyValSize - 1)               ' Null gefunden, aus Zeichenfolge extrahieren
     Else                                                    ' Keine null-terminierte Zeichenfolge für WinNT...
@@ -224,12 +224,12 @@ Public Function GetKeyValue(KeyRoot As Long, KeyName As String, SubKeyRef As Str
         Next
         KeyVal = Format$("&h" + KeyVal)                     ' DWORD in Zeichenfolge konvertieren
     End Select
-    
+
     GetKeyValue = True                                      ' Erfolgreiche Ausführung zurückgeben
     rc = RegCloseKey(hKey)                                  ' Registrierungsschlüssel schließen
     Exit Function                                           ' Beenden
-    
-GetKeyError:      ' Bereinigen, nachdem ein Fehler aufgetreten ist...
+
+GetKeyError:        ' Bereinigen, nachdem ein Fehler aufgetreten ist...
     KeyVal = ""                                             ' Rückgabewert auf leere Zeichenfolge setzen
     GetKeyValue = False                                     ' Fehlgeschlagene Ausführung zurückgeben
     rc = RegCloseKey(hKey)                                  ' Registrierungsschlüssel schließen
